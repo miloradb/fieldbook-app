@@ -9,6 +9,10 @@ CORS(app)
 def serve_index():
     return send_from_directory('.', 'index.html')
 
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
+
 def index():
     #query = 'SELECT id, interni_broj, katastarska_opstina, ST_AsGeoJSON(geom) as geom FROM parcele;'
     get_parcele_query = 'SELECT id, interni_broj, katastarska_cestica, katastarska_opstina, potez, vlasnik_zemljista, udio_u_vlasnickoj_strukturi, nacin_koriscenja, klasa_zemljista, povrsina, napomena, ST_AsGeoJSON(ST_Transform(geom, 4326)) as geom FROM parcele;'
