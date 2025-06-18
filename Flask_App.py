@@ -5,6 +5,16 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
+# Ruta za root (početnu stranicu)
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+# Ruta za ostale statičke fajlove (css, js...)
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
+
 @app.route('/field-book')
 
 def index():
