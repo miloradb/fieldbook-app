@@ -1,12 +1,13 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from db_connection import execute_query
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-
-@app.route('/field-book')
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
 
 def index():
     #query = 'SELECT id, interni_broj, katastarska_opstina, ST_AsGeoJSON(geom) as geom FROM parcele;'
