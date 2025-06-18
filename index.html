@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8" />
+  <title>Field Book</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <div class="header-left">
+      <span class="header-title">Field Book</span>
+    </div>
+    <div class="header-right">
+      <span id="user-name">👤 Milorad</span>
+    </div>
+  </header>
+
+  <div class="content">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Parcele</h2>
+      </div>
+
+      <div class="parcel-controls">
+        <input type="checkbox" id="parcelCheck" onclick="layerOn()" checked>
+        <label for="parcelCheck">PARCELE</label>
+      </div>
+
+      <ul id="lista-parcela"></ul>
+
+      <div class="parcel-section">
+        <h3>Dodaj novu parcelu</h3>
+        <button id="addParcelBtn">
+          <i class="fas fa-plus"></i> Dodaj
+        </button>
+      </div>
+
+      <div>
+        <h3>Plodored</h3>
+        <div id="plodored">Odaberite parcelu da biste videli plodored</div>
+      </div>
+
+    </aside>
+
+    <main class="main-content">
+      <div id="map"></div>
+
+      <div class="parcel-details">
+        <h3>Detalji parcele</h3>
+        <p>Izaberite parcelu sa liste za prikaz detalja</p>
+
+        <div class="parcel-info-grid">
+          <div class="info-item">
+            <span class="info-label">Interni broj:</span>
+            <span class="info-value" id="interni-broj">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Katastarska čestica:</span>
+            <span class="info-value" id="katastarska-cestica">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Katastarska opština:</span>
+            <span class="info-value" id="katastarska-opstina">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Potez:</span>
+            <span class="info-value" id="potez">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Vlasnik zemljišta:</span>
+            <span class="info-value" id="vlasnik">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Udio u vlasničkoj strukturi:</span>
+            <span class="info-value" id="udio">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Način korišćenja:</span>
+            <span class="info-value" id="nacin-koriscenja">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Klasa zemljišta:</span>
+            <span class="info-value" id="klasa">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Površina:</span>
+            <span class="info-value" id="povrsina">-</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="info-label">Napomena:</span>
+            <span class="info-value" id="napomena">-</span>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>FieldBook &copy; 2025</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+  <script>
+
+
+
+
+
+    // Ovaj kod učitava prostorne podatke parcela sa servera, prikazuje ih kao klikabilne stavke u listi na stranici
+    // i na klik zumira mapu na odabranu parcelu, dok istovremeno prikazuje dodatne detalje.
+    fetch('http://127.0.0.1:5000/field-book')
+      .then(res => res.json())
+      .then(data => {
+        const lista = document.getElementById('lista-parcela');
+        data.features.forEach(feature => {
+          const { id, broj, opstina } = feature.properties;
+
+          const li = document.createElement('li');
+          li.innerHTML = `<b>ID:</b> ${id}, <b>Interni broj:</b> ${broj}, <b>Katastarska opština:</b> ${opstina}`;
+          li.style.cursor = "pointer";
+
+          li.addEventListener("click", () => {
+            prikaziDetalje(feature.properties);
+
+            const geom = feature.geometry;
+            if (geom?.type === "Polygon") {
+              const coordinates = geom.coordinates[0].map(([lng, lat]) => [lat, lng]);
+              const bounds = L.latLngBounds(coordinates);
+              map.fitBounds(bounds);
+            }
+          });
+
+          lista.appendChild(li);
+        });
+      })
+      .catch(error => {
+        console.error("Greška prilikom preuzimanja podataka:", error);
+      });
+
+
+    var map = L.map('map').setView([45.03, 18.45], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var parceleLayer = L.layerGroup().addTo(map);
+
+    fetch('http://127.0.0.1:5000/field-book')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          onEachFeature: (feature, layer) => {
+            const props = feature.properties;
+            if (!props) return;
+
+            layer.bindPopup(`
+              <b>ID:</b> ${props.id}<br>
+              <b>Interni broj:</b> ${props.broj}<br>
+              <b>Opština:</b> ${props.opstina}
+            `);
+
+            layer.on("click", () => prikaziDetalje(props));
+          }
+        }).addTo(parceleLayer);
+      })
+      .catch(err => console.error('Greška prilikom učitavanja parcela:', err));
+
+
+    function layerOn() {
+      var checkbox = document.getElementById("parcelCheck");
+      if (checkbox.checked == true) {
+        parceleLayer.addTo(map);
+      } else {
+        map.removeLayer(parceleLayer);
+      }
+    };
+
+/*
+    function prikaziDetalje(p) {
+      document.getElementById("interni-broj").textContent = p.broj || "-";
+      document.getElementById("katastarska-cestica").textContent = p.kc || "-";
+      document.getElementById("katastarska-opstina").textContent = p.opstina || "-";
+      document.getElementById("potez").textContent = p.potez || "-";
+      document.getElementById("vlasnik").textContent = p.vlasnik || "-";
+      document.getElementById("udio").textContent = p.udio || "-";
+      document.getElementById("nacin-koriscenja").textContent = p.nacin || "-";
+      document.getElementById("klasa").textContent = p.klasa || "-";
+      document.getElementById("povrsina").textContent = p.povrsina ? `${p.povrsina} m²` : "-";
+      document.getElementById("napomena").textContent = p.napomena || "-";
+    }
+*/
+    function prikaziDetalje(p) {
+      const polja = {
+        "interni-broj": p.broj,
+        "katastarska-cestica": p.kc,
+        "katastarska-opstina": p.opstina,
+        "potez": p.potez,
+        "vlasnik": p.vlasnik,
+        "udio": p.udio,
+        "nacin-koriscenja": p.nacin,
+        "klasa": p.klasa,
+        "povrsina": p.povrsina ? `${p.povrsina} m²` : "-",
+        "napomena": p.napomena
+      };
+
+      for (const [id, value] of Object.entries(polja)) {
+        document.getElementById(id).textContent = value || "-";
+      }
+
+
+
+      fetch(`http://127.0.0.1:5000/plodored/${p.id}`)
+        .then(res => res.json())
+        .then(plodored => {
+          const div = document.getElementById("plodored");
+          if (plodored.error) {
+            div.innerHTML = "<i>Plodored podaci nisu dostupni.</i>";
+            return;
+          }
+
+          // Prikaz liste plodoreda
+          let html = "<ul>";
+          plodored.forEach(item => {
+            html += `<li><b>${item.godina}:</b> ${item.kultura} (${item.napomena || "nema napomene"})</li>`;
+          });
+          html += "</ul>";
+          div.innerHTML = html;
+        })
+        .catch(err => {
+          console.error("Greška pri dohvatanju plodoreda:", err);
+          document.getElementById("plodored").innerHTML = "<i>Greška pri učitavanju plodoreda.</i>";
+        });
+
+
+
+
+    }
+
+
+
+
+  </script>
+</body>
+</html>
