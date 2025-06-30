@@ -6,7 +6,15 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/index')
+# Ruta za root (početnu stranicu)
+@app.route('/')
+def serve_index():Add commentMore actions
+    return send_from_directory('.', 'index.html')
+
+# Ruta za ostale statičke fajlove (css, js...)
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
 
 def index():
     #query = 'SELECT id, interni_broj, katastarska_opstina, ST_AsGeoJSON(geom) as geom FROM parcele;'
