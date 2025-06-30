@@ -114,7 +114,7 @@
 
     // Ovaj kod učitava prostorne podatke parcela sa servera, prikazuje ih kao klikabilne stavke u listi na stranici
     // i na klik zumira mapu na odabranu parcelu, dok istovremeno prikazuje dodatne detalje.
-    fetch(`/field-book`)
+    fetch('/field-book')
       .then(res => res.json())
       .then(data => {
         const lista = document.getElementById('lista-parcela');
@@ -152,7 +152,7 @@
 
     var parceleLayer = L.layerGroup().addTo(map);
 
-    fetch(`/field-book`)
+    fetch('/field-book')
       .then(res => res.json())
       .then(data => {
         L.geoJSON(data, {
@@ -237,15 +237,7 @@
           console.error("Greška pri dohvatanju plodoreda:", err);
           document.getElementById("plodored").innerHTML = "<i>Greška pri učitavanju plodoreda.</i>";
         });
-
-
-
-
     }
-
-
-
-
   </script>
 </body>
 </html>
