@@ -21,6 +21,19 @@ header {
     padding: 1rem 2rem;
     background-color: #C06D37;
     color: white;
+    height: 64px;
+}
+
+.logout-btn {
+    background-color: #8e4c2b;
+    color: white;
+    border: none;
+    margin: 0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
 }
 
 /* Main content layout */
@@ -71,10 +84,41 @@ header {
     padding: 0.5rem;
     border-bottom: 1px solid #eee;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 #lista-parcela li:hover {
     background-color: #f9f9f9;
+}
+
+#lista-parcela li.selected {
+    background-color: #d6f5d6; /* svijetlo zelena, možeš promijeniti */
+    border-radius: 5px;
+}
+
+#plodored {
+    background: #f0f4f0;
+    border-left: 4px solid #6ddb4f;
+    padding: 0.75rem;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #333;
+    margin-top: 15px;
+}
+
+#plodored ul {
+    list-style: none;
+    padding-left: 0;
+
+}
+
+#plodored ul li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #aaa;
+}
+
+#plodored ul li:last-child {
+    border-bottom: none;
 }
 
 /* Main content */
@@ -82,40 +126,78 @@ header {
     flex: 1;
     padding: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    height: calc(100vh - 64px);
+    gap: 1rem;
 }
 
 /* Map */
 #map {
-    height: 60vh;
-    width: 100%;
+    flex: 1; /*ovo sam dodao*/
+    min-width: 0; /*ovo sam dodao*/
+    height: 100%; /*ovo sam dodao*/
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
 }
 
 /* Parcel details */
 .parcel-details {
+    flex: 1; /* Manji prostor za detalje */
+    overflow-y: auto; /* Omogućava skrolovanje ako sadržaj premašuje visinu */
+    height: 100%;
     background: white;
     border-radius: 8px;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Add parcel button */
-#addParcelBtn {
-    width: 100%;
-    padding: 0.5rem;
-    background-color: #6bbd4f;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+
+.parcel-details {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
 }
 
-#addParcelBtn:hover {
-    background-color: #388E3C;
-    transition: 0.7s;
+.parcel-details h3 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.parcel-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4caf50;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #455a64;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    color: #263238;
+    font-size: 1rem;
+    word-break: break-word;
 }
 
 /* Footer */
@@ -124,163 +206,97 @@ header {
     color: white;
     text-align: center;
     padding: 0.5rem;
+
 }
 
-/* Responsive styles za ekrane manje od 768px */
-@media (max-width: 768px) {
+/* Responsive styles za ekrane manje od 1024px */
+@media (max-width: 1200px) {
+    .content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        order: 1; /* Postavlja sidebar na vrh */
+    }
+
+    .main-content {
+        order: 2;
+        width: 100%;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .parcel-details {
+        order: 1; /* Detalji iznad mape */
+        margin-bottom: 1rem;
+    }
+    #map {
+        flex: initial;
+        height: 400px; /* Fiksna visina za mobilne uređaje */
+        order: 1; /* Mapa ide ispod detalja */
+        margin-top: 1rem;
+    }
+
+    #lista-parcela {
+        max-height: 200px;
+    }
+
+}
+
+
+
+
+
+
+/*
+Responsive dizajn
+
+@media (min-width: 1200px) {
+    .parcel-info-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
   .content {
     flex-direction: column;
   }
 
   .sidebar {
-    width: 100%;
+    width: 100w%;
     border-right: none;
     border-bottom: 1px solid #ddd;
-    order: 1; /* Postavlja sidebar na vrh */
+    order: 1;
   }
 
   .main-content {
-    order: 2; /* Postavlja glavni sadržaj ispod */
-    padding: 1rem;
-    display: flex;
+    order: 2;
     flex-direction: column;
+    padding: 1rem;
   }
 
   #map {
-    height: 400px; /* Fiksna visina za mobilne uređaje */
-    order: 3; /* Mapa ide ispod detalja */
+    width: 100%;
+    height: 400px;
     margin-top: 1rem;
+    order: 3;
   }
 
   .parcel-details {
-    order: 2; /* Detalji iznad mape */
+    width: 100%;
+    height: auto;
+    order: 2;
     margin-bottom: 1rem;
   }
 
   #lista-parcela {
     max-height: 200px;
   }
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-.parcel-details {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px;
-}
-
-.parcel-details h3 {
-  color: #2e7d32;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 10px;
-}
-
-.parcel-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #4caf50;
-}
-
-.info-item.full-width {
-  grid-column: 1 / -1;
-}
-
-.info-label {
-  font-weight: 600;
-  color: #455a64;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
-}
-
-.info-value {
-  color: #263238;
-  font-size: 1rem;
-  word-break: break-word;
-}
-
-
-
-
-
-
-
-
-
-.parcel-details {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px;
-}
-
-.parcel-details h3 {
-  color: #2e7d32;
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 10px;
-}
-
-.parcel-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #4caf50;
-}
-
-.info-item.full-width {
-  grid-column: 1 / -1;
-}
-
-.info-label {
-  font-weight: 600;
-  color: #455a64;
-  font-size: 0.85rem;
-  margin-bottom: 4px;
-}
-
-.info-value {
-  color: #263238;
-  font-size: 1rem;
-  word-break: break-word;
-}
-
-/* Responsive dizajn */
-@media (max-width: 768px) {
   .parcel-info-grid {
     grid-template-columns: 1fr;
   }
@@ -289,51 +305,4 @@ header {
     padding: 10px;
   }
 }
-
-@media (min-width: 1200px) {
-  .parcel-info-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Responsive dizajn */
-@media (max-width: 768px) {
-  .parcel-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .info-item {
-    padding: 10px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .parcel-info-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+*/
