@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/index.html')
+@app.route('/index')
 
 def index():
     #query = 'SELECT id, interni_broj, katastarska_opstina, ST_AsGeoJSON(geom) as geom FROM parcele;'
