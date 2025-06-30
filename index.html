@@ -152,7 +152,7 @@
 
     var parceleLayer = L.layerGroup().addTo(map);
 
-    fetch(`https://fieldbook-app.onrender.com/${userId}`)
+    fetch(`http://127.0.0.1:5000/${userId}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) {
@@ -251,7 +251,7 @@
 
 
 
-      fetch(`https://fieldbook-app.onrender.com/plodored/${p.id}`)
+      fetch(`http://127.0.0.1:5000/plodored/${p.id}`)
         .then(res => res.json())
         .then(plodored => {
           const div = document.getElementById("plodored");
