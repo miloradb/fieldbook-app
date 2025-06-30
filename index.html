@@ -114,7 +114,7 @@
 
     // Ovaj kod učitava prostorne podatke parcela sa servera, prikazuje ih kao klikabilne stavke u listi na stranici
     // i na klik zumira mapu na odabranu parcelu, dok istovremeno prikazuje dodatne detalje.
-    fetch(`https://fieldbook-app.onrender.com/field-book`)
+    fetch(`/field-book`)
       .then(res => res.json())
       .then(data => {
         const lista = document.getElementById('lista-parcela');
@@ -152,7 +152,7 @@
 
     var parceleLayer = L.layerGroup().addTo(map);
 
-    fetch(`https://fieldbook-app.onrender.com/field-book`)
+    fetch(`/field-book`)
       .then(res => res.json())
       .then(data => {
         L.geoJSON(data, {
@@ -216,7 +216,7 @@
 
 
 
-      fetch(`https://fieldbook-app.onrender.com/plodored/${p.id}`)
+      fetch(`/plodored/${p.id}`)
         .then(res => res.json())
         .then(plodored => {
           const div = document.getElementById("plodored");
