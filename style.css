@@ -63,7 +63,7 @@ header {
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px dashed #aaa;
 }
 
 #parcelCheck {
