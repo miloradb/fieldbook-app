@@ -182,7 +182,7 @@ def index():
                 "udio": row["udio_u_vlasnickoj_strukturi"],
                 "nacin": row["nacin_koriscenja"],
                 "klasa": row["klasa_zemljista"],
-                "povrsina": row["povrsina"],
+                "povrsina": round(row["povrsina"], 2)
                 "napomena": row["napomena"],
                 "user_id": row["user_id"]
             }
