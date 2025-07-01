@@ -47,7 +47,7 @@ def field_book(user_id):
                 "udio": row["udio_u_vlasnickoj_strukturi"],
                 "nacin": row["nacin_koriscenja"],
                 "klasa": row["klasa_zemljista"],
-                "povrsina": round(row["povrsina"], 2),
+                "povrsina": row["povrsina"],
                 "napomena": row["napomena"],
                 "user_id": row["user_id"]
             }
@@ -182,7 +182,7 @@ def index():
                 "udio": row["udio_u_vlasnickoj_strukturi"],
                 "nacin": row["nacin_koriscenja"],
                 "klasa": row["klasa_zemljista"],
-                "povrsina": round(row["povrsina"], 2),
+                "povrsina": row["povrsina"],
                 "napomena": row["napomena"],
                 "user_id": row["user_id"]
             }
