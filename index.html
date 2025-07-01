@@ -12,10 +12,11 @@
 <body>
   <header>
     <div class="header-left">
-      <span class="header-title">Field Book</span>
+      <i class="fas fa-leaf"></i>&nbsp<span class="header-title">Field Book</span>
     </div>
-    <div class="header-right">
-      <span id="user-name">👤 Milorad</span>
+    <div class="header-right"><i class="fas fa-user">&nbsp</i>
+      <span id="user-name"></span>
+      <button onclick="logout()" class="logout-btn">Odjava</button>
     </div>
   </header>
 
@@ -27,18 +28,22 @@
 
       <div class="parcel-controls">
         <input type="checkbox" id="parcelCheck" onclick="layerOn()" checked>
+        <i class="fas fa-map-marked-alt"></i>&nbsp
         <label for="parcelCheck">PARCELE</label>
       </div>
 
       <ul id="lista-parcela"></ul>
 
+      <!--  <ul id="lista-parcela" class="parcel-list"></ul>-->
+
+<!--
       <div class="parcel-section">
         <h3>Dodaj novu parcelu</h3>
         <button id="addParcelBtn">
           <i class="fas fa-plus"></i> Dodaj
         </button>
       </div>
-
+-->
       <div>
         <h3>Plodored</h3>
         <div id="plodored">Odaberite parcelu da biste videli plodored</div>
@@ -47,7 +52,6 @@
     </aside>
 
     <main class="main-content">
-      <div id="map"></div>
 
       <div class="parcel-details">
         <h3>Detalji parcele</h3>
@@ -95,8 +99,10 @@
             <span class="info-value" id="napomena">-</span>
           </div>
         </div>
-
       </div>
+
+      <div id="map"></div>
+
     </main>
   </div>
 
@@ -106,44 +112,38 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+
   <script>
+    function logout() {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    }
 
+    const userId = localStorage.getItem('user_id');
+    const username = localStorage.getItem('username');
 
+    if (!userId) {
+      // Ako korisnik nije ulogovan, prebaci na login
+      window.location.href = 'login.html';
+    }
 
+    // Postavi ime korisnika u zaglavlje (ako postoji element)
+    const userSpan = document.getElementById('user-name');
+    if (userSpan && username) {
+      userSpan.textContent = `${username}`;
+    }
+
+    // TODO: Kad rješimo rutu /field-book/<user_id> koristi je ovako:
+    //fetch(`http://127.0.0.1:5000/field-book/1`)
+
+  </script>
+
+  <script>
 
 
     // Ovaj kod učitava prostorne podatke parcela sa servera, prikazuje ih kao klikabilne stavke u listi na stranici
     // i na klik zumira mapu na odabranu parcelu, dok istovremeno prikazuje dodatne detalje.
-    fetch('/field-book')
-      .then(res => res.json())
-      .then(data => {
-        const lista = document.getElementById('lista-parcela');
-        data.features.forEach(feature => {
-          const { id, broj, opstina } = feature.properties;
-
-          const li = document.createElement('li');
-          li.innerHTML = `<b>ID:</b> ${id}, <b>Interni broj:</b> ${broj}, <b>Katastarska opština:</b> ${opstina}`;
-          li.style.cursor = "pointer";
-
-          li.addEventListener("click", () => {
-            prikaziDetalje(feature.properties);
-
-            const geom = feature.geometry;
-            if (geom?.type === "Polygon") {
-              const coordinates = geom.coordinates[0].map(([lng, lat]) => [lat, lng]);
-              const bounds = L.latLngBounds(coordinates);
-              map.fitBounds(bounds);
-            }
-          });
-
-          lista.appendChild(li);
-        });
-      })
-      .catch(error => {
-        console.error("Greška prilikom preuzimanja podataka:", error);
-      });
-
-
     var map = L.map('map').setView([45.03, 18.45], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -152,9 +152,42 @@
 
     var parceleLayer = L.layerGroup().addTo(map);
 
-    fetch('/field-book')
+    fetch(`/field-book/${userId}`)
       .then(res => res.json())
       .then(data => {
+        if (data.error) {
+          console.error("Server vraca gresku:", data.error);
+          return;
+        }
+
+        const lista = document.getElementById('lista-parcela');
+        data.features.forEach(feature => {
+          const { id, broj, opstina } = feature.properties;
+
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <b>ID:</b> ${id},<br>
+            <b>Interni broj:</b> ${broj},<br>
+            <b>Katastarska opština:</b> ${opstina}
+            `;
+          li.style.cursor = "pointer";
+
+          li.addEventListener("click", () => {
+            prikaziDetalje(feature.properties);
+
+            document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected"));
+            li.classList.add("selected");
+
+            const geom = feature.geometry;
+            if (geom?.type === "Polygon") {
+              const coordinates = geom.coordinates[0].map(([lng, lat]) => [lat, lng]);
+              const bounds = L.latLngBounds(coordinates);
+              map.fitBounds(bounds);
+            }
+          });
+          lista.appendChild(li);
+        });
+
         L.geoJSON(data, {
           onEachFeature: (feature, layer) => {
             const props = feature.properties;
@@ -170,32 +203,21 @@
           }
         }).addTo(parceleLayer);
       })
-      .catch(err => console.error('Greška prilikom učitavanja parcela:', err));
+      .catch(error => {
+        console.error("Greška prilikom preuzimanja podataka:", error);
+      });
 
 
     function layerOn() {
       var checkbox = document.getElementById("parcelCheck");
-      if (checkbox.checked == true) {
+      if (checkbox.checked === true) {
         parceleLayer.addTo(map);
       } else {
         map.removeLayer(parceleLayer);
       }
-    };
-
-/*
-    function prikaziDetalje(p) {
-      document.getElementById("interni-broj").textContent = p.broj || "-";
-      document.getElementById("katastarska-cestica").textContent = p.kc || "-";
-      document.getElementById("katastarska-opstina").textContent = p.opstina || "-";
-      document.getElementById("potez").textContent = p.potez || "-";
-      document.getElementById("vlasnik").textContent = p.vlasnik || "-";
-      document.getElementById("udio").textContent = p.udio || "-";
-      document.getElementById("nacin-koriscenja").textContent = p.nacin || "-";
-      document.getElementById("klasa").textContent = p.klasa || "-";
-      document.getElementById("povrsina").textContent = p.povrsina ? `${p.povrsina} m²` : "-";
-      document.getElementById("napomena").textContent = p.napomena || "-";
     }
-*/
+
+
     function prikaziDetalje(p) {
       const polja = {
         "interni-broj": p.broj,
@@ -238,6 +260,9 @@
           document.getElementById("plodored").innerHTML = "<i>Greška pri učitavanju plodoreda.</i>";
         });
     }
+
   </script>
 </body>
+
+
 </html>

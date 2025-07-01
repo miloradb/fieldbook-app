@@ -19,16 +19,19 @@ def connect_to_db():
 
 connect_to_db()
 
-def execute_query(query):
+
+def execute_query(query, params=None):
     try:
         conn = connect_to_db()
         if conn is None:
             return None
 
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute(query)
+        if params:
+            cur.execute(query, params)
+        else:
+            cur.execute(query)
         rows = cur.fetchall()
-
 
         # Za svaki red, ako postoji kolona 'location' koja je string GeoJSON,
         # pretvori je u python dict da bi JSON jsonify lepo to prosledio
@@ -42,3 +45,5 @@ def execute_query(query):
     except Exception as e:
         print(f"Greska pri izvrsavanju upita: {e}")
         return None
+
+
