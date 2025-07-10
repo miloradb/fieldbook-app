@@ -46,7 +46,7 @@
 -->
       <div>
         <h3>Plodored</h3>
-        <div id="plodored">Odaberite parcelu da biste videli plodored</div>
+        <div id="plodored">Odaberite parcelu za prikaz plodoreda</div>
       </div>
 
     </aside>
@@ -152,8 +152,26 @@
 
     var parceleLayer = L.layerGroup().addTo(map);
 
-    fetch(`/field-book/${userId}`)
-      .then(res => res.json())
+    const highlightLayer = L.geoJSON(null, {
+      style: {
+        color: 'orange',
+        weight: 3,
+        fillOpacity: 0.2
+      }
+    }).addTo(map);
+
+    // Funkcija za generisanje popup sadržaja
+    function getPopupText(props) {
+      return `
+        <b>ID:</b> ${props.id}<br>
+        <b>Broj:</b> ${props.broj}<br>
+        <b>Opština:</b> ${props.opstina}
+      `;
+    }
+
+
+    fetch(`http://127.0.0.1:5000/field-book/${userId}`)
+      .then(response => response.json())
       .then(data => {
         if (data.error) {
           console.error("Server vraca gresku:", data.error);
@@ -162,88 +180,155 @@
 
         const lista = document.getElementById('lista-parcela');
         data.features.forEach(feature => {
-          const { id, broj, opstina } = feature.properties;
+          const props = feature.properties;
+          const geom = feature.geometry;
 
           const li = document.createElement('li');
-          li.innerHTML = `
-            <b>ID:</b> ${id},<br>
-            <b>Interni broj:</b> ${broj},<br>
-            <b>Katastarska opština:</b> ${opstina}
-            `;
-          li.style.cursor = "pointer";
+          li.innerHTML = getPopupText(props);
+          li.style.cursor = "cursor";
+          //li.style.cursor = map.hasLayer(parceleLayer) ? "pointer" : "default";
+
+          if (!document.getElementById('parcelCheck').checked) {
+            //li.style.pointerEvents = "none";
+            //li.style.opacity = "0.5";
+            //return alert('test');
+          }
+
 
           li.addEventListener("click", () => {
-            prikaziDetalje(feature.properties);
+            if (!map.hasLayer(parceleLayer)) {
+              const upozorenje = document.getElementById("plodored");
+              upozorenje.innerHTML = ('Layer parcele je isključen. Ne možete selektovati parcelu');
+              return;
+            }
+            prikaziDetalje(props);
+
+            if (li.classList.contains("selected")) {
+              return; // već selektovana – ne radi ništa
+            }
 
             document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected"));
             li.classList.add("selected");
 
-            const geom = feature.geometry;
+
             if (geom?.type === "Polygon") {
+              const polygon = {
+                type: "Feature",
+                geometry: geom,
+                properties: props
+              };
+
+              // Očisti prethodni highlight i dodaj novi
+              highlightLayer.clearLayers();
+              highlightLayer.addData(polygon);
+
               const coordinates = geom.coordinates[0].map(([lng, lat]) => [lat, lng]);
               const bounds = L.latLngBounds(coordinates);
               map.fitBounds(bounds);
+
+              L.popup()
+                .setLatLng(bounds.getCenter())
+                .setContent(getPopupText(props))
+                .openOn(map);
             }
           });
           lista.appendChild(li);
         });
 
+        //Prikaz na mapi
         L.geoJSON(data, {
           onEachFeature: (feature, layer) => {
             const props = feature.properties;
             if (!props) return;
 
-            layer.bindPopup(`
-              <b>ID:</b> ${props.id}<br>
-              <b>Interni broj:</b> ${props.broj}<br>
-              <b>Opština:</b> ${props.opstina}
-            `);
+            layer.bindPopup(getPopupText(props));
 
-            layer.on("click", () => prikaziDetalje(props));
+            layer.on("click", () => {
+              prikaziDetalje(props);
+
+              // Selektuj geometriju
+              highlightLayer.clearLayers();
+              highlightLayer.addData(feature);
+
+              // Otvori popup na centru geometrije
+              if (feature.geometry?.type === "Polygon") {
+                const coords = feature.geometry.coordinates[0].map(([lng, lat]) => [lat, lng]);
+                const center = L.latLngBounds(coords).getCenter();
+
+                L.popup()
+                  .setLatLng(center)
+                  .setContent(getPopupText(props))
+                  .openOn(map);
+              }
+            });
           }
         }).addTo(parceleLayer);
       })
+
       .catch(error => {
         console.error("Greška prilikom preuzimanja podataka:", error);
       });
 
-
     function layerOn() {
-      var checkbox = document.getElementById("parcelCheck");
-      if (checkbox.checked === true) {
+      const checkbox = document.getElementById("parcelCheck");
+      //const plodoredElement = document.getElementById("plodored")
+
+      if (checkbox.checked) {
         parceleLayer.addTo(map);
+        //plodoredElement.classList.remove("disabled")
       } else {
-        map.removeLayer(parceleLayer);
+        map.removeLayer(parceleLayer); // Ukloni sloj sa mape
+        map.closePopup(); // Ukloni popup
+        highlightLayer.clearLayers(); // Očisti highlight sloj
+        document.getElementById("plodored").innerHTML = "";// (opciono) Očisti prikaz plodoreda
+        document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected")); // Ukloni selektovani stil iz liste
+        //plodoredElement.classList.add("disabled");
+        //prikaziDetalje(null); // Očisti detalje (ako to podržavaš)
+        //document.getElementById("detalji-parcele").innerHTML = "";
       }
     }
 
+    map.on("click", function() {
+      map.closePopup();
+      highlightLayer.clearLayers();
+      document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected"));
+      prikaziDetalje(null);
+    });
 
     function prikaziDetalje(p) {
       const polja = {
-        "interni-broj": p.broj,
-        "katastarska-cestica": p.kc,
-        "katastarska-opstina": p.opstina,
-        "potez": p.potez,
-        "vlasnik": p.vlasnik,
-        "udio": p.udio,
-        "nacin-koriscenja": p.nacin,
-        "klasa": p.klasa,
-        "povrsina": p.povrsina ? `${p.povrsina.toFixed(2)} m²` : "-",
-        "napomena": p.napomena
+        "interni-broj": p?.broj || "-",
+        "katastarska-cestica": p?.kc || "-",
+        "katastarska-opstina": p?.opstina || "-",
+        "potez": p?.potez || "-",
+        "vlasnik": p?.vlasnik || "-",
+        "udio": p?.udio || "-",
+        "nacin-koriscenja": p?.nacin || "-",
+        "klasa": p?.klasa || "-",
+        "povrsina": p?.povrsina ? `${p.povrsina.toFixed(2)} m²` : "-",
+        "napomena": p?.napomena || "-"
       };
 
       for (const [id, value] of Object.entries(polja)) {
-        document.getElementById(id).textContent = value || "-";
+        document.getElementById(id).textContent = value;
+      }
+
+      // Plodored
+      const prikaz = document.getElementById("plodored");
+      if (!p?.id) {
+        prikaz.innerHTML = "<p>Odaberite parcelu za prikaz plodoreda</p>";
+        return;
       }
 
 
 
-      fetch(`/plodored/${p.id}`)
-        .then(res => res.json())
+
+      fetch(`http://127.0.0.1:5000/plodored/${p.id}`)
+        .then(response => response.json())
         .then(plodored => {
-          const div = document.getElementById("plodored");
+          const prikaz = document.getElementById("plodored");
           if (plodored.error) {
-            div.innerHTML = "<i>Plodored podaci nisu dostupni.</i>";
+            prikaz.innerHTML = "<i>Plodored podaci nisu dostupni.</i>";
             return;
           }
 
@@ -253,7 +338,7 @@
             html += `<li><b>${item.godina}:</b> ${item.kultura} (${item.napomena || "nema napomene"})</li>`;
           });
           html += "</ul>";
-          div.innerHTML = html;
+          prikaz.innerHTML = html;
         })
         .catch(err => {
           console.error("Greška pri dohvatanju plodoreda:", err);

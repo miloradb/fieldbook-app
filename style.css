@@ -108,6 +108,11 @@ header {
     margin-top: 15px;
 }
 
+#plodored.disabled {
+    background-color: transparent !important; /* potpuno prozirno */
+    padding: 0.75rem;
+}
+
 #plodored ul {
     list-style: none;
     padding-left: 0;
