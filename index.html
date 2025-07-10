@@ -170,7 +170,7 @@
     }
 
 
-    fetch(`http://127.0.0.1:5000/field-book/${userId}`)
+    fetch(`"https://fieldbook-app.onrender.com/field-book/${userId}`)
       .then(response => response.json())
       .then(data => {
         if (data.error) {
@@ -323,7 +323,7 @@
 
 
 
-      fetch(`http://127.0.0.1:5000/plodored/${p.id}`)
+      fetch("https://fieldbook-app.onrender.com/plodored/${p.id}`)
         .then(response => response.json())
         .then(plodored => {
           const prikaz = document.getElementById("plodored");
