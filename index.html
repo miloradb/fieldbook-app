@@ -53,56 +53,161 @@
 
     <main class="main-content">
 
-      <div class="parcel-details">
-        <h3>Detalji parcele</h3>
-        <p>Izaberite parcelu sa liste za prikaz detalja</p>
-
-        <div class="parcel-info-grid">
-          <div class="info-item">
-            <span class="info-label">Interni broj:</span>
-            <span class="info-value" id="interni-broj">-</span>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3 card="card-title">test</h3>
+            <div  class="card-icon primary">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="info-label">Katastarska čestica:</span>
-            <span class="info-value" id="katastarska-cestica">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Katastarska opština:</span>
-            <span class="info-value" id="katastarska-opstina">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Potez:</span>
-            <span class="info-value" id="potez">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Vlasnik zemljišta:</span>
-            <span class="info-value" id="vlasnik">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Udio u vlasničkoj strukturi:</span>
-            <span class="info-value" id="udio">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Način korišćenja:</span>
-            <span class="info-value" id="nacin-koriscenja">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Klasa zemljišta:</span>
-            <span class="info-value" id="klasa">-</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Površina:</span>
-            <span class="info-value" id="povrsina">-</span>
-          </div>
-          <div class="info-item full-width">
-            <span class="info-label">Napomena:</span>
-            <span class="info-value" id="napomena">-</span>
-          </div>
+          <div id='ugovor-status' class="card-value">test</div>
+          <div id='ugovor-raspisan' class="card-description">test</div>
         </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 card="card-title"></h3>
+            <div  class="card-icon primary">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+          </div>
+          <div id='ugovor-status' class="card-value"></div>
+          <div id='ugovor-raspisan' class="card-description"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 card="card-title"></h3>
+            <div  class="card-icon primary">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+          </div>
+          <div id='ugovor-status' class="card-value"></div>
+          <div id='ugovor-raspisan' class="card-description"></div>
+        </div>
+
       </div>
 
-      <div id="map"></div>
+      <div class="bottom-section">
+        <div class="parcel-details" id="desktop-only">
+          <h3>Detalji parcele</h3>
+          <p>Izaberite parcelu sa liste za prikaz detalja:</p>
 
+          <div class="parcel-info-grid">
+            <div class="info-item">
+              <span class="info-label">Interni broj:</span>
+              <span class="info-value" id="interni-broj">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Katastarska čestica:</span>
+              <span class="info-value" id="katastarska-cestica">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Katastarska opština:</span>
+              <span class="info-value" id="katastarska-opstina">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Potez:</span>
+              <span class="info-value" id="potez">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Vlasnik zemljišta:</span>
+              <span class="info-value" id="vlasnik">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Udio u vlasničkoj strukturi:</span>
+              <span class="info-value" id="udio">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Način korišćenja:</span>
+              <span class="info-value" id="nacin-koriscenja">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Klasa zemljišta:</span>
+              <span class="info-value" id="klasa">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Površina:</span>
+              <span class="info-value" id="povrsina">-</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="info-label">Napomena:</span>
+              <span class="info-value" id="napomena">-</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+        <!-- OVO JE ACCORDION ZA MOBILNU VERZIJU, RADI PREGLEDNOSTO -->
+
+        <details  class="parcel-details" id="mobile-only">
+          <summary>Detalji parcele</summary>
+          <p>Izaberite parcelu sa liste za prikaz detalja:</p>
+
+          <div class="parcel-info-grid">
+            <div class="info-item">
+              <span class="info-label">Interni broj:</span>
+              <span class="info-value" id="mob-interni-broj">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Katastarska čestica:</span>
+              <span class="info-value" id="mob-katastarska-cestica">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Katastarska opština:</span>
+              <span class="info-value" id="mob-katastarska-opstina">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Potez:</span>
+              <span class="info-value" id="mob-potez">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Vlasnik zemljišta:</span>
+              <span class="info-value" id="mob-vlasnik">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Udio u vlasničkoj strukturi:</span>
+              <span class="info-value" id="mob-udio">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Način korišćenja:</span>
+              <span class="info-value" id="mob-nacin-koriscenja">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Klasa zemljišta:</span>
+              <span class="info-value" id="mob-klasa">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Površina:</span>
+              <span class="info-value" id="mob-povrsina">-</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="info-label">Napomena:</span>
+              <span class="info-value" id="mob-napomena">-</span>
+            </div>
+          </div>
+        </details>
+
+
+
+
+
+
+
+
+
+        <div id="map"></div>
+      </div>
     </main>
   </div>
 
@@ -170,7 +275,7 @@
     }
 
 
-    fetch(`https://fieldbook-app.onrender.com/field-book/${userId}`)
+    fetch(`http://127.0.0.1:5000/field-book/${userId}`)
       .then(response => response.json())
       .then(data => {
         if (data.error) {
@@ -185,20 +290,22 @@
 
           const li = document.createElement('li');
           li.innerHTML = getPopupText(props);
-          li.style.cursor = "cursor";
+          li.style.cursor = "pointer";
           //li.style.cursor = map.hasLayer(parceleLayer) ? "pointer" : "default";
 
+          /*
           if (!document.getElementById('parcelCheck').checked) {
             //li.style.pointerEvents = "none";
             //li.style.opacity = "0.5";
             //return alert('test');
           }
+          */
 
 
           li.addEventListener("click", () => {
             if (!map.hasLayer(parceleLayer)) {
               const upozorenje = document.getElementById("plodored");
-              upozorenje.innerHTML = ('Layer parcele je isključen. Ne možete selektovati parcelu');
+              upozorenje.innerHTML = ('Layer parcele je isključen. Ne možete selektovati parcelu.');
               return;
             }
             prikaziDetalje(props);
@@ -281,6 +388,9 @@
         highlightLayer.clearLayers(); // Očisti highlight sloj
         document.getElementById("plodored").innerHTML = "Layer parcele je isključen. Uključite layer, da biste vidjeli informacije o plodoredu.";// (opciono) Očisti prikaz plodoreda
         document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected")); // Ukloni selektovani stil iz liste
+        //plodoredElement.classList.add("disabled");
+        //prikaziDetalje(null); // Očisti detalje (ako to podržavaš)
+        //document.getElementById("detalji-parcele").innerHTML = "";
       }
     }
 
@@ -305,21 +415,30 @@
         "napomena": p?.napomena || "-"
       };
 
+      /*
       for (const [id, value] of Object.entries(polja)) {
         document.getElementById(id).textContent = value;
       }
+*/
+      for (const [id, value] of Object.entries(polja)) {
+        document.getElementById(id).textContent = value;
+        const mobEl = document.getElementById("mob-" + id);
+        if (mobEl) mobEl.textContent = value;
+      }
+
+
 
       // Plodored
       const prikaz = document.getElementById("plodored");
       if (!p?.id) {
-        prikaz.innerHTML = "<p>Odaberite parcelu za prikaz plodoreda</p>";
+        prikaz.innerHTML = "<p>Odaberite parcelu za prikaz.</p>";
         return;
       }
 
 
 
 
-      fetch(`https://fieldbook-app.onrender.com/plodored/${p.id}`)
+      fetch(`http://127.0.0.1:5000/plodored/${p.id}`)
         .then(response => response.json())
         .then(plodored => {
           const prikaz = document.getElementById("plodored");
