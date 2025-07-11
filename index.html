@@ -46,7 +46,7 @@
 -->
       <div>
         <h3>Plodored</h3>
-        <div id="plodored">Odaberite parcelu za prikaz plodoreda</div>
+        <div id="plodored">Odaberite parcelu za prikaz plodoreda.</div>
       </div>
 
     </aside>
@@ -271,20 +271,16 @@
 
     function layerOn() {
       const checkbox = document.getElementById("parcelCheck");
-      //const plodoredElement = document.getElementById("plodored")
 
       if (checkbox.checked) {
         parceleLayer.addTo(map);
-        //plodoredElement.classList.remove("disabled")
+        document.getElementById("plodored").innerHTML = "Odaberite parcelu za prikaz plodoreda."
       } else {
         map.removeLayer(parceleLayer); // Ukloni sloj sa mape
         map.closePopup(); // Ukloni popup
         highlightLayer.clearLayers(); // Očisti highlight sloj
-        document.getElementById("plodored").innerHTML = "";// (opciono) Očisti prikaz plodoreda
+        document.getElementById("plodored").innerHTML = "Layer parcele je isključen. Uključite layer, da biste vidjeli informacije o plodoredu.";// (opciono) Očisti prikaz plodoreda
         document.querySelectorAll("#lista-parcela li").forEach(el => el.classList.remove("selected")); // Ukloni selektovani stil iz liste
-        //plodoredElement.classList.add("disabled");
-        //prikaziDetalje(null); // Očisti detalje (ako to podržavaš)
-        //document.getElementById("detalji-parcele").innerHTML = "";
       }
     }
 
