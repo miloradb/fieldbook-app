@@ -11,7 +11,7 @@ CORS(app)
 # Ruta za root (početnu stranicu)
 @app.route('/')
 def serve_index():
-    return send_from_directory('.', 'login.html', 'Lokaliteti.html')
+    return send_from_directory('.', 'login.html')
     
 # Ruta za ostale statičke fajlove (css, js...)
 @app.route('/<path:path>')
