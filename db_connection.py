@@ -46,4 +46,3 @@ def execute_query(query, params=None):
         print(f"Greska pri izvrsavanju upita: {e}")
         return None
 
-

@@ -195,5 +195,55 @@ def index():
 
 
 
+@app.route('/prinosi')
+
+def prinosi():
+    get_prinosi_query = 'select * from prinosi;'
+    rows = execute_query(get_prinosi_query)
+    if not rows:
+        return jsonify({"greska": "Podaci nisu pronadjeni"})
+    return jsonify(rows)
+
+'''
+@app.route('/prinosi/<int:parcela_id>')
+def prinosi_by_parcela(parcela_id):
+    get_prinosi_by_parcela_query = f'Select * from prinosi where parcela_id = {parcela_id}'
+
+    rows = execute_query(get_prinosi_by_parcela_query)
+    if not rows:
+        return jsonify({"GRESKA": "Podaci nisu pronadjeni"})
+    return jsonify(rows)
+'''
+
+
+
+@app.route('/prinosi/<int:parcela_id>')
+def prinosi_by_parcela(parcela_id):
+    get_query = '''
+    SELECT 
+        p.id AS prinos_id,
+        p.parcela_id,
+        p.godina,
+        p.kultura,
+        p.prinos_kg,
+        p.napomena,
+        pa.user_id,
+        u.username AS korisnik
+    FROM prinosi p
+    LEFT JOIN parcele pa ON p.parcela_id = pa.id
+    LEFT JOIN users u ON pa.user_id = u.id
+    WHERE p.parcela_id = %s
+    ORDER BY godina DESC;
+    '''
+
+    result = execute_query(get_query, (parcela_id,))
+    if result is None:
+        return jsonify({'GRESKA': 'Podaci nisu pronadjeni'}), 500
+
+    return jsonify(result), 200
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
